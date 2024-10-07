@@ -137,9 +137,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   duration: const Duration(seconds: 2),
                 ),
               );
-              Future.delayed(const Duration(milliseconds: 1000), () {
-                goToWorkoutListScreen();
-              });
+              Navigator.pop(context);
+              // Future.delayed(const Duration(milliseconds: 1000), () {
+              //   goToWorkoutListScreen();
+              // });
             }
           },
           child: Form(
@@ -233,7 +234,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     // Check if the input is a valid integer
                     final doubleValue = double.tryParse(value);
                     if (doubleValue == null || doubleValue <= 0) {
-                      return 'Please enter a valid positive number';
+                      return 'Please enter a valid number';
                     }
 
                     return null; // Return null if validation passes
@@ -264,7 +265,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     // Check if the input is a valid integer
                     final intValue = int.tryParse(value);
                     if (intValue == null || intValue <= 0) {
-                      return 'Please enter a valid positive number';
+                      return 'Please enter a valid number';
                     }
 
                     return null; // Return null if validation passes
@@ -288,8 +289,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     onPressed: _addSet,
                     child: Text(
                       widget.workout == null
-                          ? 'Add Workout Set'
-                          : 'Edit Workout Set',
+                          ? 'Save Workout'
+                          : 'Update Workout',
                       style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,

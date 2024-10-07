@@ -15,6 +15,7 @@ import '../bloc/workout_state.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 
+import 'workout_details.dart';
 import 'workout_screen.dart';
 
 class WorkoutList extends StatefulWidget {
@@ -28,12 +29,12 @@ class _WorkoutListState extends State<WorkoutList> {
   Map groupedItems = {};
   String? dayName;
 
-  goToWorkoutScreen(Workout? workout) async {
+  goToWorkoutScreen(BuildContext context, Workout? workout) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     final workoutRepository =
         SharedPreferencesWorkoutRepository(sharedPreferences);
     // ignore: use_build_context_synchronously
-    Navigator.of(context).push(MaterialPageRoute(
+    await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => BlocProvider(
         create: (context) => WorkoutBloc(
           AddWorkout(workoutRepository),
@@ -46,6 +47,7 @@ class _WorkoutListState extends State<WorkoutList> {
             : const WorkoutScreen(),
       ),
     ));
+    BlocProvider.of<WorkoutBloc>(context).add(GetWorkoutsEvent());
   }
 
   @override
@@ -53,6 +55,7 @@ class _WorkoutListState extends State<WorkoutList> {
     BlocProvider.of<WorkoutBloc>(context).add(GetWorkoutsEvent());
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(4),
@@ -77,7 +80,9 @@ class _WorkoutListState extends State<WorkoutList> {
           size: 32.0,
           color: Colors.white,
         ),
-        onPressed: () => goToWorkoutScreen(null),
+        onPressed: () {
+          goToWorkoutScreen(context, null);
+        },
       ),
       body: BlocBuilder<WorkoutBloc, WorkoutState>(
         builder: (context, state) {
@@ -101,92 +106,128 @@ class _WorkoutListState extends State<WorkoutList> {
             Map<int, List<Workout>> groupedItems =
                 groupItemsByCategory(workouts);
 
-            return ListView.builder(
-              itemCount: groupedItems.length,
-              itemBuilder: (BuildContext context, int index) {
-                int category = groupedItems.keys.elementAt(index); // Day
-                List itemsInCategory =
-                    groupedItems[category]!; // Sets on that day
+            return groupedItems.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No workout recorded',
+                      style: TextStyle(
+                        color: Colors.black, // Title text color
+                        fontWeight: FontWeight.bold, // Bold text
+                        fontSize: 16.0, // Title font size
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: groupedItems.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      int category = groupedItems.keys.elementAt(index); // Day
+                      List<Workout> itemsInCategory =
+                          groupedItems[category]!; // Sets on that day
 
-                String dayName = '';
+                      String dayName = '';
 
-                for (var day in dayItems) {
-                  if (day.id == category) {
-                    dayName = day.day;
-                  }
-                }
+                      for (var day in dayItems) {
+                        if (day.id == category) {
+                          dayName = day.day;
+                        }
+                      }
 
-                return Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        side: const BorderSide(color: Colors.grey, width: 0.3),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Text(
-                            dayName, // Day name (e.g. "Monday")
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        const Divider(),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const ClampingScrollPhysics(),
-                          itemCount: itemsInCategory.length,
-                          itemBuilder: (BuildContext context, int setIndex) {
-                            final workout = itemsInCategory[setIndex];
-                            final set = workout.sets[0];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                        icon: const Icon(Icons.edit,
-                                            size: 20, color: Colors.teal),
-                                        onPressed: () =>
-                                            goToWorkoutScreen(workout)),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete,
-                                          size: 20, color: Colors.red),
-                                      onPressed: () {
-                                        BlocProvider.of<WorkoutBloc>(context)
-                                            .add(
-                                                DeleteWorkoutEvent(workout.id));
-                                        setState(() {});
-                                      },
+                      return GestureDetector(
+                        onTap: () async {
+                          final sharedPreferences =
+                              await SharedPreferences.getInstance();
+                          final workoutRepository =
+                              SharedPreferencesWorkoutRepository(
+                                  sharedPreferences);
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => BlocProvider(
+                                create: (context) => WorkoutBloc(
+                                      AddWorkout(workoutRepository),
+                                      UpdateWorkout(workoutRepository),
+                                      DeleteWorkout(workoutRepository),
+                                      GetWorkouts(workoutRepository),
                                     ),
-                                  ],
-                                ),
-                                title: Text(
+                                child: WorkoutDetails(
+                                  day: dayName,
+                                )),
+                          ));
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(8.0),
+                          child: Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                    color: Colors.grey, width: 0.3),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    dayName, // Day name (e.g. "Monday")
                                     style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                       color: Colors.black87,
                                     ),
-                                    'Set ${setIndex + 1}: ${set.exercise} - ${set.weight}kg, ${set.repetitions} repetitions'),
-                              ),
-                            );
-                          },
+                                  ),
+                                ),
+                                const Divider(),
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const ClampingScrollPhysics(),
+                                  itemCount: itemsInCategory.length,
+                                  itemBuilder:
+                                      (BuildContext context, int setIndex) {
+                                    final workout = itemsInCategory[setIndex];
+                                    final set = workout.sets[0];
+                                    return Container(
+                                      // padding: const EdgeInsets.symmetric(
+                                      //     vertical: 8.0, horizontal: 12.0),
+                                      child: ListTile(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        // trailing: Row(
+                                        //   mainAxisSize: MainAxisSize.min,
+                                        //   children: [
+                                        //     IconButton(
+                                        //         icon: const Icon(Icons.edit,
+                                        //             size: 20, color: Colors.teal),
+                                        //         onPressed: () =>
+                                        //             goToWorkoutScreen(workout)),
+                                        //     IconButton(
+                                        //       icon: const Icon(Icons.delete,
+                                        //           size: 20, color: Colors.red),
+                                        //       onPressed: () {
+                                        //         BlocProvider.of<WorkoutBloc>(context)
+                                        //             .add(DeleteWorkoutEvent(
+                                        //                 workout.id));
+                                        //         setState(() {});
+                                        //       },
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        title: Text(
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black87,
+                                            ),
+                                            'Set ${setIndex + 1}: ${set.exercise}, ${set.weight}kg, ${set.repetitions} ${set.repetitions > 1 ? 'repetitions' : 'repetition'} '),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
+                      );
+                    },
+                  );
           } else if (state is WorkoutError) {
             return Center(child: Text(state.message));
           }
