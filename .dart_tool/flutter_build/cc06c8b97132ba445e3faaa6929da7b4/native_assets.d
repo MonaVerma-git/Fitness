@@ -1,0 +1,1 @@
+ /Users/monavishnu/Documents/Fitness/.dart_tool/flutter_build/cc06c8b97132ba445e3faaa6929da7b4/native_assets.yaml: 

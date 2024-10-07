@@ -43,8 +43,10 @@ class _WorkoutListState extends State<WorkoutList> {
           GetWorkouts(workoutRepository),
         ),
         child: workout != null
-            ? WorkoutScreen(workout: workout)
-            : const WorkoutScreen(),
+            ? WorkoutScreen(key: const Key('workoutScreen'), workout: workout)
+            : const WorkoutScreen(
+                key: Key('workoutScreen'),
+              ),
       ),
     ));
     BlocProvider.of<WorkoutBloc>(context).add(GetWorkoutsEvent());
@@ -183,41 +185,17 @@ class _WorkoutListState extends State<WorkoutList> {
                                       (BuildContext context, int setIndex) {
                                     final workout = itemsInCategory[setIndex];
                                     final set = workout.sets[0];
-                                    return Container(
-                                      // padding: const EdgeInsets.symmetric(
-                                      //     vertical: 8.0, horizontal: 12.0),
-                                      child: ListTile(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        // trailing: Row(
-                                        //   mainAxisSize: MainAxisSize.min,
-                                        //   children: [
-                                        //     IconButton(
-                                        //         icon: const Icon(Icons.edit,
-                                        //             size: 20, color: Colors.teal),
-                                        //         onPressed: () =>
-                                        //             goToWorkoutScreen(workout)),
-                                        //     IconButton(
-                                        //       icon: const Icon(Icons.delete,
-                                        //           size: 20, color: Colors.red),
-                                        //       onPressed: () {
-                                        //         BlocProvider.of<WorkoutBloc>(context)
-                                        //             .add(DeleteWorkoutEvent(
-                                        //                 workout.id));
-                                        //         setState(() {});
-                                        //       },
-                                        //     ),
-                                        //   ],
-                                        // ),
-                                        title: Text(
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.black87,
-                                            ),
-                                            'Set ${setIndex + 1}: ${set.exercise}, ${set.weight}kg, ${set.repetitions} ${set.repetitions > 1 ? 'repetitions' : 'repetition'} '),
+                                    return ListTile(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
+                                      title: Text(
+                                          key: const Key('setDetailsList'),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black87,
+                                          ),
+                                          'Set ${setIndex + 1}: ${set.exercise}, ${set.weight}kg, ${set.repetitions} ${set.repetitions > 1 ? 'repetitions' : 'repetition'} '),
                                     );
                                   },
                                 ),
@@ -229,7 +207,8 @@ class _WorkoutListState extends State<WorkoutList> {
                     },
                   );
           } else if (state is WorkoutError) {
-            return Center(child: Text(state.message));
+            return Center(
+                key: const Key('errorMessage'), child: Text(state.message));
           }
           return const Center(child: Text('No workouts recorded.'));
         },

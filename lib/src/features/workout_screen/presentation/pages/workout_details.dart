@@ -143,15 +143,6 @@ class _WorkoutDetailsState extends State<WorkoutDetails> {
                 dayId = item.id;
               }
             }
-            // var workoutList = [];
-            // var ids = [];
-
-            // for (Workout item in workouts) {
-            //   if (item.sets.first.day == dayId) {
-            //     ids.add(item.id);
-            //     workoutList.add(item.sets);
-            //   }
-            // }
 
             var filteredWorkouts = workouts.where((workout) {
               return workout.sets.first.day == dayId;
@@ -208,6 +199,7 @@ class _WorkoutDetailsState extends State<WorkoutDetails> {
                                 ],
                               ),
                               title: Text(
+                                  key: const Key('setDetails'),
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.black87,
@@ -221,7 +213,8 @@ class _WorkoutDetailsState extends State<WorkoutDetails> {
                     ],
                   );
           } else if (state is WorkoutError) {
-            return Center(child: Text(state.message));
+            return Center(
+                key: const Key('errorMessage'), child: Text(state.message));
           } else if (state is WorkoutLoading) {
             return const Center(child: CircularProgressIndicator());
           }

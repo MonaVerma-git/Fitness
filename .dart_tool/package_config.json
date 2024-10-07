@@ -164,6 +164,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_driver",
+      "rootUri": "file:///Users/monavishnu/Development/flutter/packages/flutter_driver",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "flutter_lints",
       "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/flutter_lints-4.0.0",
       "packageUri": "lib/",
@@ -188,6 +194,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "fuchsia_remote_debug_protocol",
+      "rootUri": "file:///Users/monavishnu/Development/flutter/packages/fuchsia_remote_debug_protocol",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "glob",
       "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/glob-2.1.2",
       "packageUri": "lib/",
@@ -204,6 +216,12 @@
       "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/http_parser-4.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "integration_test",
+      "rootUri": "file:///Users/monavishnu/Development/flutter/packages/integration_test",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
     },
     {
       "name": "io",
@@ -350,6 +368,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "process",
+      "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/process-5.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "provider",
       "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/provider-6.1.2",
       "packageUri": "lib/",
@@ -476,6 +500,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "sync_http",
+      "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/sync_http-0.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "term_glyph",
       "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/term_glyph-1.2.1",
       "packageUri": "lib/",
@@ -542,6 +572,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "webdriver",
+      "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/webdriver-3.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "webkit_inspection_protocol",
       "rootUri": "file:///Users/monavishnu/.pub-cache/hosted/pub.dev/webkit_inspection_protocol-1.2.1",
       "packageUri": "lib/",
@@ -566,7 +602,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-10-07T01:08:17.004478Z",
+  "generated": "2024-10-07T23:00:48.243682Z",
   "generator": "pub",
   "generatorVersion": "3.5.3",
   "flutterRoot": "file:///Users/monavishnu/Development/flutter",

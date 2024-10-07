@@ -103,6 +103,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('workoutScreen'),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white, size: 28),
@@ -137,10 +138,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   duration: const Duration(seconds: 2),
                 ),
               );
-              Navigator.pop(context);
-              // Future.delayed(const Duration(milliseconds: 1000), () {
-              //   goToWorkoutListScreen();
-              // });
+              widget.workout == null
+                  ? goToWorkoutListScreen()
+                  : Navigator.pop(context);
             }
           },
           child: Form(

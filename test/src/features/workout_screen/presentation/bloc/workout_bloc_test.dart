@@ -45,7 +45,7 @@ void main() {
   });
 
   group('WorkoutBloc', () {
-    final Workout workout;
+    final Workout? workout;
     workout = Workout(id: '1', sets: []);
 
     test('initial state is WorkoutInitial', () {
@@ -55,7 +55,7 @@ void main() {
     blocTest<WorkoutBloc, WorkoutState>(
       'emits [WorkoutLoading, WorkoutLoaded] when AddWorkoutEvent is added',
       build: () {
-        when(mockAddWorkout(workout)).thenAnswer((_) async => {});
+        when(mockAddWorkout(workout!)).thenAnswer((_) async => {});
         return workoutBloc;
       },
       act: (bloc) => bloc.add(AddWorkoutEvent(Workout(id: '1', sets: []))),
@@ -68,7 +68,13 @@ void main() {
     blocTest<WorkoutBloc, WorkoutState>(
       'emits [WorkoutLoading, WorkoutLoaded] when UpdateWorkoutEvent is added',
       build: () {
-        when(mockUpdateWorkout(workout)).thenAnswer((_) async => {});
+        final workoutSets = [
+          WorkoutSet(
+              exercise: 'Bench Press', weight: 70, repetitions: 10, day: 1),
+        ];
+
+        final workouts = Workout(id: '1', sets: workoutSets);
+        when(mockUpdateWorkout(workouts)).thenAnswer((_) async => {});
         return workoutBloc;
       },
       act: (bloc) => bloc.add(UpdateWorkoutEvent(Workout(id: '1', sets: []))),
@@ -107,7 +113,13 @@ void main() {
     blocTest<WorkoutBloc, WorkoutState>(
       'emits [WorkoutError] when adding a workout fails',
       build: () {
-        when(mockAddWorkout(workout)).thenThrow(Exception('Add failed'));
+        final workoutSets = [
+          WorkoutSet(
+              exercise: 'Bench Press', weight: 70, repetitions: 10, day: 1),
+        ];
+
+        final workouts = Workout(id: '1', sets: workoutSets);
+        when(mockAddWorkout(workouts)).thenThrow(Exception('Add failed'));
         return workoutBloc;
       },
       act: (bloc) => bloc.add(AddWorkoutEvent(Workout(id: '1', sets: []))),
