@@ -39,11 +39,6 @@ Test coverage is measured using the built-in Flutter testing tools. As of the la
 - **Domain Layer**: 60%
 - **Data Layer**: 85%
 
-### Running Tests
-To run the tests and check the coverage, use the following command:
-```bash
-flutter test --coverage
-
 ## Conclusion
 The architectural choices made in this project aim to create a robust, maintainable, and scalable application. Clean Architecture provides a solid foundation for future enhancements and integrations.
 
@@ -63,4 +58,9 @@ The architectural choices made in this project aim to create a robust, maintaina
 4. Run the application:
     ```bash
     flutter run
+
+### Running Tests
+To run the tests and check the coverage, use the following command:
+```bash
+flutter test --coverage
 
