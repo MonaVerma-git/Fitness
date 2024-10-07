@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../const.dart';
 
+import '../../data/repositories/shared_preferences_workout_repository.dart';
 import '../../domain/models/workout_set.dart';
+import '../../domain/usecases/add_workout_usecase.dart';
+import '../../domain/usecases/delete_workout_usecase.dart';
+import '../../domain/usecases/get_workout_usecase.dart';
+import '../../domain/usecases/update_workout_usecase.dart';
 import '../bloc/workout_bloc.dart';
 import '../bloc/workout_event.dart';
 import '../bloc/workout_state.dart';
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+
+import 'workout_screen.dart';
 
 class WorkoutList extends StatefulWidget {
   const WorkoutList({super.key});
@@ -19,12 +28,56 @@ class _WorkoutListState extends State<WorkoutList> {
   Map groupedItems = {};
   String? dayName;
 
+  goToWorkoutScreen(Workout? workout) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final workoutRepository =
+        SharedPreferencesWorkoutRepository(sharedPreferences);
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => BlocProvider(
+        create: (context) => WorkoutBloc(
+          AddWorkout(workoutRepository),
+          UpdateWorkout(workoutRepository),
+          DeleteWorkout(workoutRepository),
+          GetWorkouts(workoutRepository),
+        ),
+        child: workout != null
+            ? WorkoutScreen(workout: workout)
+            : const WorkoutScreen(),
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     BlocProvider.of<WorkoutBloc>(context).add(GetWorkoutsEvent());
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workout List'),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(4),
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 45, 87, 121),
+        elevation: 4,
+        title: const Text(
+          'Workout Tracker',
+          style: TextStyle(
+            color: Colors.white, // Title text color
+            fontWeight: FontWeight.bold, // Bold text
+            fontSize: 24.0, // Title font size
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromARGB(255, 45, 87, 121),
+        elevation: 6,
+        child: const Icon(
+          Icons.add,
+          size: 32.0,
+          color: Colors.white,
+        ),
+        onPressed: () => goToWorkoutScreen(null),
       ),
       body: BlocBuilder<WorkoutBloc, WorkoutState>(
         builder: (context, state) {
@@ -66,50 +119,65 @@ class _WorkoutListState extends State<WorkoutList> {
                 return Container(
                   margin: const EdgeInsets.all(8.0),
                   child: Card(
-                    elevation: 1,
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                        side: const BorderSide(color: Colors.grey, width: 0.3),
+                        borderRadius: BorderRadius.circular(10)),
                     child: Column(
                       children: [
-                        Text(dayName,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                            dayName, // Day name (e.g. "Monday")
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        const Divider(),
                         ListView.builder(
                           shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
+                          physics: const ClampingScrollPhysics(),
                           itemCount: itemsInCategory.length,
                           itemBuilder: (BuildContext context, int setIndex) {
                             final workout = itemsInCategory[setIndex];
                             final set = workout.sets[0];
-                            return ListTile(
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  BlocProvider.of<WorkoutBloc>(context)
-                                      .add(DeleteWorkoutEvent(workout.id));
-                                  setState(() {});
-                                },
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 12.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                        icon: const Icon(Icons.edit,
+                                            size: 20, color: Colors.teal),
+                                        onPressed: () =>
+                                            goToWorkoutScreen(workout)),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete,
+                                          size: 20, color: Colors.red),
+                                      onPressed: () {
+                                        BlocProvider.of<WorkoutBloc>(context)
+                                            .add(
+                                                DeleteWorkoutEvent(workout.id));
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                title: Text(
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                    'Set ${setIndex + 1}: ${set.exercise} - ${set.weight}kg, ${set.repetitions} repetitions'),
                               ),
-                              // trailing: Row(
-                              //   children: [
-                              //     IconButton(
-                              //       icon: Icon(Icons.edit),
-                              //       onPressed: () {
-                              //         Navigator.of(context)
-                              //             .push(MaterialPageRoute(
-                              //           builder: (context) =>
-                              //               WorkoutScreen(workout: workout),
-                              //         ));
-                              //       },
-                              //     ),
-                              //     IconButton(
-                              //       icon: Icon(Icons.delete),
-                              //       onPressed: () {
-                              //         BlocProvider.of<WorkoutBloc>(context)
-                              //             .add(DeleteWorkoutEvent(workout.id));
-                              //       },
-                              //     ),
-                              //   ],
-                              // ),
-                              title: Text(
-                                  'Set ${setIndex + 1}: ${set.exercise} - ${set.weight}kg, ${set.repetitions} repetitions'),
                             );
                           },
                         ),

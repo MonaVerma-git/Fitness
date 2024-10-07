@@ -10,6 +10,7 @@ class SharedPreferencesWorkoutRepository implements WorkoutRepository {
 
   SharedPreferencesWorkoutRepository(this.sharedPreferences);
 
+  // Fetch workout list
   @override
   List<Workout> getWorkouts() {
     final jsonString = sharedPreferences.getString(workoutKey);
@@ -20,6 +21,7 @@ class SharedPreferencesWorkoutRepository implements WorkoutRepository {
     return [];
   }
 
+  // Save a new workout
   @override
   void addWorkout(Workout workout) {
     final workouts = getWorkouts();
@@ -28,6 +30,7 @@ class SharedPreferencesWorkoutRepository implements WorkoutRepository {
     sharedPreferences.setString(workoutKey, jsonEncode(jsonList));
   }
 
+  // Delete a workout bt ID
   @override
   void deleteWorkout(String workoutId) {
     final workouts = getWorkouts();
@@ -38,6 +41,7 @@ class SharedPreferencesWorkoutRepository implements WorkoutRepository {
     sharedPreferences.setString(workoutKey, jsonEncode(jsonList));
   }
 
+  // Update an existing workout
   @override
   void updateWorkout(Workout workout) {
     final workouts = getWorkouts();

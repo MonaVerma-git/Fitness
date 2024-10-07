@@ -8,6 +8,7 @@ import 'src/features/workout_screen/domain/usecases/add_workout_usecase.dart';
 import 'src/features/workout_screen/domain/usecases/get_workout_usecase.dart';
 import 'src/features/workout_screen/domain/usecases/update_workout_usecase.dart';
 import 'src/features/workout_screen/presentation/bloc/workout_bloc.dart';
+import 'src/features/workout_screen/presentation/pages/workout_list.dart';
 import 'src/features/workout_screen/presentation/pages/workout_screen.dart';
 
 void main() async {
@@ -38,8 +39,9 @@ class MyApp extends StatelessWidget {
           DeleteWorkout(workoutRepository),
           GetWorkouts(workoutRepository),
         ),
-        child: const WorkoutScreen(),
+        child: const WorkoutList(),
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
