@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../const.dart';
 
+import '../../domain/models/workout_set.dart';
 import '../bloc/workout_bloc.dart';
 import '../bloc/workout_event.dart';
 import '../bloc/workout_state.dart';
-import 'workout_screen.dart';
+import 'package:collection/collection.dart';
 
 class WorkoutList extends StatefulWidget {
   const WorkoutList({super.key});
@@ -30,13 +32,36 @@ class _WorkoutListState extends State<WorkoutList> {
             return const Center(child: CircularProgressIndicator());
           } else if (state is WorkoutLoaded) {
             final workouts = state.workouts;
-            print('---------------worrr');
-            print(workouts);
+
+            // Group workouts by day
+            Map<int, List<Workout>> groupItemsByCategory(
+                List<Workout> workouts) {
+              workouts
+                  .sort((a, b) => a.sets.first.day.compareTo(b.sets.first.day));
+
+              return groupBy(workouts, (item) {
+                // Assuming item.sets contains day
+                return item.sets.first.day; // Group by day
+              });
+            }
+
+            Map<int, List<Workout>> groupedItems =
+                groupItemsByCategory(workouts);
 
             return ListView.builder(
-              itemCount: workouts.length,
+              itemCount: groupedItems.length,
               itemBuilder: (BuildContext context, int index) {
-                final workout = workouts[index];
+                int category = groupedItems.keys.elementAt(index); // Day
+                List itemsInCategory =
+                    groupedItems[category]!; // Sets on that day
+
+                String dayName = '';
+
+                for (var day in dayItems) {
+                  if (day.id == category) {
+                    dayName = day.day;
+                  }
+                }
 
                 return Container(
                   margin: const EdgeInsets.all(8.0),
@@ -44,15 +69,15 @@ class _WorkoutListState extends State<WorkoutList> {
                     elevation: 1,
                     child: Column(
                       children: [
-                        Text('Workout ${index + 1}',
+                        Text(dayName,
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: ClampingScrollPhysics(),
-                          itemCount: workout.sets.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final set = workout.sets[index];
-                            // Return a widget representing the item
+                          itemCount: itemsInCategory.length,
+                          itemBuilder: (BuildContext context, int setIndex) {
+                            final workout = itemsInCategory[setIndex];
+                            final set = workout.sets[0];
                             return ListTile(
                               trailing: IconButton(
                                 icon: Icon(Icons.delete),
@@ -84,7 +109,7 @@ class _WorkoutListState extends State<WorkoutList> {
                               //   ],
                               // ),
                               title: Text(
-                                  'Set ${index + 1}: ${set.exercise} - ${set.weight}kg, ${set.repetitions} repetitions'),
+                                  'Set ${setIndex + 1}: ${set.exercise} - ${set.weight}kg, ${set.repetitions} repetitions'),
                             );
                           },
                         ),

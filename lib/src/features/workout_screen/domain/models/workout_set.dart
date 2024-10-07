@@ -24,11 +24,13 @@ class Workout {
 }
 
 class WorkoutSet {
+  final int day;
   final String exercise;
   final double weight;
   final int repetitions;
 
   WorkoutSet({
+    required this.day,
     required this.exercise,
     required this.weight,
     required this.repetitions,
@@ -37,6 +39,7 @@ class WorkoutSet {
   // Serialize WorkoutSet to JSON
   Map<String, dynamic> toJson() {
     return {
+      'day': day,
       'exercise': exercise,
       'weight': weight,
       'repetitions': repetitions,
@@ -46,9 +49,20 @@ class WorkoutSet {
   // Deserialize WorkoutSet from JSON
   static WorkoutSet fromJson(Map<String, dynamic> json) {
     return WorkoutSet(
+      day: json['day'],
       exercise: json['exercise'],
       weight: json['weight'],
       repetitions: json['repetitions'],
     );
   }
+}
+
+class DayItems {
+  final int id;
+  final String day;
+
+  DayItems({
+    required this.id,
+    required this.day,
+  });
 }

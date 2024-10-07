@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../const.dart';
 import '../../data/repositories/shared_preferences_workout_repository.dart';
 import '../../domain/repositories/ workout_repository.dart';
 import '../../domain/models/workout_set.dart';
@@ -32,6 +33,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedExercise;
+  int? _selectedDay;
 
   double _weight = 0.0;
   int _repetitions = 0;
@@ -45,6 +47,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         id: widget.workout?.id ?? DateTime.now().toString(),
         sets: [
           WorkoutSet(
+            day: _selectedDay!,
             exercise: _selectedExercise!,
             weight: _weight,
             repetitions: _repetitions,
@@ -79,6 +82,29 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               const Text(
                 'Add a Set:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField(
+                value: _selectedDay,
+                hint: const Text('Select Day'),
+                items: dayItems.map((dayItem) {
+                  return DropdownMenuItem(
+                    value: dayItem.id,
+                    child: Text(dayItem.day),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedDay = value!;
+                    print(value);
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select a day';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
